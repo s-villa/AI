@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>S-Villa - Red neuronal</title>
+	<style type="text/css">
+		#site {
+			padding: 5rem;
+			font-size: 5rem;
+			margin-left: 15rem;
+		}
+	</style>
+</head>
+<body>
+	<input data-jscolor="{value:'#CC66FF'}", onInput="update(this.jscolor)">
+	<div id="site">
+		Mi sitio web
+	</div>
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.4.5/jscolor.min.js"></script>
+	<script src="https://unpkg.com/brain.js"></script>
+
+	<script type="text/javascript">
+
+		//Init NeuralLink
+		var network = new brain.NeuralNetwork();
+
+		//Train
+		network.train([
+			//Fonde Negro == Texto Blanco(out = 1)
+			{input: {red:0, green:0, blue:0}, output: {color:1}},
+			//Fonde Blanco == Texto Negro(out = 0)
+			{input: {red:1, green:1, blue:1}, output: {color:0}}
+			//Puedo poner infinidad de ejemplos si quiero
+		])
+
+		function update(color){
+			let div = document.getElementById("site");
+			div.style.background = color.toHEXString();
+
+			// Tomar fondo elegido y usuarlo de entrada
+			// para la red
+			var entry = {
+				red  : color.channels.r/255,
+				green: color.channels.g/255,
+				blue : color.channels.b/255,
+			};
+
+			// Prediccion de la red
+			let result = network.run(entry);
+			console.log(result);
+
+			// Result > .5 text.color = white
+			if(result.color > .5){
+				div.style.color = "white";
+			}else{
+				div.style.color = "black";
+			}
+		}
+	</script>
+</body>
+</html>
